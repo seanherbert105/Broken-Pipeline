@@ -22,8 +22,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # Should this section be a comment?
+      # Or should this be part of the pipeline?
+      # - name: Checkout code
+      #   uses: actions/checkout@v4
 
       - name: Troubleshooting assistance
         run: |
@@ -33,6 +35,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Pipeline will break at this stage without certain token permissions associated. 
+      # To create a new GitHub token, follow these instructions for creating a personal access token (classic). 
+      # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+      # The permissions required is having access to the repo, the workflow, and the write:packages.
+      # If you need assistance with this, please let me know, but read the instructions first before asking.
+      #
+      # After creating your personal access token, you then need to copy it and paste it as a secret on GitHub Actions.
       - name: Log in to {{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
@@ -63,7 +72,9 @@ jobs:
           template: '@/contrib/sarif.tpl'
           output: 'hello-world-app.sarif'
 
+      # Is the file name correct?
+      # The output of the job called Run Trivy vulnerability scanner doesn't match the sarif_file. 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'hello-world-app.sarif'
+          sarif_file: 'hello-world-broken-app.sarif'
